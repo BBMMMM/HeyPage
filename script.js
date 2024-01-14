@@ -1,6 +1,11 @@
 function createCalendar(container, year, month) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDay = new Date(year, month, 1).getDay();
+    
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    const currentDay = currentDate.getDate(); // Get the current day of the month.
 
     const monthNames = [
         "Janvāris", "Februāris", "Marts", "Aprīlis",
@@ -50,6 +55,11 @@ function createCalendar(container, year, month) {
                 if (j === 5 || j === 6) {
                     cell.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
                     cell.style.borderRadius = "50%"; // Make the background circular
+                }
+
+                // Check if it's the current date and apply underline styling
+                if (year === currentYear && month === currentMonth && date === currentDay) {
+                    cell.style.textDecoration = "underline";
                 }
 
                 row.appendChild(cell);
