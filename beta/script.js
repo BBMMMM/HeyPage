@@ -35,7 +35,14 @@ const year = 2024;
 const month = 1;
 const calendar = generateCalendar(year, month);
 
-// Printing the calendar to the console
-calendar.forEach((week) => {
-  console.log(week.join("\t"));
-});
+// Target the "calendar" element by its ID
+const calendarElement = document.getElementById("calendar");
+
+// Generate the HTML content for the calendar
+const calendarHTML = calendar.map(week => {
+  return "<tr>" + week.map(day => `<td>${day}</td>`).join("") + "</tr>";
+}).join("");
+
+// Set the generated HTML as the innerHTML of the "calendar" element
+calendarElement.innerHTML = `<table>${calendarHTML}</table>`;
+In this code:
