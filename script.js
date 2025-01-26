@@ -68,12 +68,18 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
 
   const currentDate = new Date();
 
-  container.style.overflow = "hidden"; // Hide the scroll bar
+  container.style.overflow = "auto"; // Enable scrolling
+  container.style.webkitOverflowScrolling = "touch"; // Add momentum scrolling for iOS
   container.style.height = "100vh";
   container.style.width = "100%"; // Make the calendar full width
   container.style.position = "relative";
   container.style.backgroundColor = "#121212"; // Dark background
   container.style.color = "white"; // Default text color
+
+  container.addEventListener("touchmove", (event) => {
+    event.stopPropagation(); // Prevent interference with other scroll areas
+  });
+  
 
   const totalMonths = 37; // 12 months before and 24 months after the current month
   const startMonthIndex = currentMonth - 12;
@@ -87,6 +93,13 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
   }
 
   function isHoliday(year, month, day) {
+    if (day > new Date(year, month + 1, 0).getDate()) {
+      const nextMonth = (month + 1) % 12;
+      const nextYear = month === 11 ? year + 1 : year;
+      return nationalHolidays.some(
+        (holiday) => holiday.year === nextYear && holiday.month === nextMonth && holiday.day === day - new Date(year, month + 1, 0).getDate()
+      );
+    }
     return nationalHolidays.some((holiday) => {
       if (holiday.year !== undefined) {
         return holiday.year === year && holiday.month === month && holiday.day === day;
@@ -94,6 +107,7 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
       return holiday.month === month && holiday.day === day;
     });
   }
+  
 
   function getNextDay(year, month, day) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -104,6 +118,7 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
     const nextYear = month === 11 ? year + 1 : year;
     return { year: nextYear, month: nextMonth, day: 1 };
   }
+
 
   for (let offset = 0; offset < totalMonths; offset++) {
     const monthIndex = (startMonthIndex + offset + 12) % 12;
@@ -214,10 +229,12 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
       }
 
       monthTable.appendChild(row);
+      
     }
 
     monthContainer.appendChild(monthTable);
     calendarFragment.appendChild(monthContainer);
+    
   }
 
   container.innerHTML = "";
@@ -232,9 +249,12 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
 
   // Add custom scroll handling to the entire document
   document.addEventListener("wheel", (event) => {
-    event.preventDefault();
-    container.scrollTop += event.deltaY;
+    if (event.target === container) {
+      container.scrollTop += event.deltaY;
+      event.preventDefault();
+    }
   });
+  
 }
 
 document.addEventListener("DOMContentLoaded", function () {

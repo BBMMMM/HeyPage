@@ -38,3 +38,9 @@ h1 {
     background-color: rgba(255, 255, 255, 0.1);
     color: hsl(0, 0%, 80%)
 }
+
+#calendar {
+    height: 100vh; /* Full viewport height */
+    overflow: auto; /* Allow scrolling */
+    -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
+  }
