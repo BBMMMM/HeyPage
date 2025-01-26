@@ -1,4 +1,4 @@
-function createYearCalendar(container, year) {
+function createScrollableCalendar(container, currentYear, currentMonth) {
   const daysOfWeek = ["P", "O", "T", "C", "P", "S", "Sv"];
   const monthNames = [
     "Janvāris",
@@ -15,99 +15,113 @@ function createYearCalendar(container, year) {
     "Decembris",
   ];
 
-  const currentDate = new Date(); // Get the current date
+  const currentDate = new Date();
 
-  const calendarTable = document.createElement("table");
-  calendarTable.className = "year-calendar";
+  container.style.overflowY = "scroll";
+  container.style.height = "90vh";
 
-  const caption = document.createElement("caption");
-  caption.textContent = year;
-  caption.style.color = "white";
-  caption.style.fontSize = "45px";
-  caption.style.fontFamily = "'Caveat', cursive";
-  caption.style.padding = "25px";
-  calendarTable.appendChild(caption);
+  const totalMonths = 23; // 11 months before and after the current month
+  const startMonthIndex = currentMonth - 11;
 
-  const headerRow = document.createElement("tr");
-  for (const dayOfWeek of daysOfWeek) {
-    const th = document.createElement("th");
-    th.textContent = dayOfWeek;
-    th.style.color = "white";
-    th.style.fontSize = "15px";
-    th.style.fontFamily = "'Caveat', cursive";
-    headerRow.appendChild(th);
-  }
-  calendarTable.appendChild(headerRow);
+  const calendarFragment = document.createDocumentFragment();
 
-  const firstDayOfYear = new Date(year, 0, 1); // January 1st of the year
-  const lastDayOfYear = new Date(year, 11, 31); // December 31st of the year
-  const daysInYear = Math.ceil((lastDayOfYear - firstDayOfYear + 1) / (1000 * 60 * 60 * 24));
+  for (let offset = 0; offset < totalMonths; offset++) {
+    const monthIndex = (startMonthIndex + offset + 12) % 12;
+    const year = currentYear + Math.floor((startMonthIndex + offset) / 12);
 
-  let currentDay = firstDayOfYear;
+    const monthContainer = document.createElement("div");
+    monthContainer.className = "month-container";
+    monthContainer.style.margin = "20px 0";
 
-  while (currentDay.getFullYear() === year) {
-    const row = document.createElement("tr");
+    const monthHeader = document.createElement("div");
+    monthHeader.textContent = `${monthNames[monthIndex]} ${year}`;
+    monthHeader.style.color = "white";
+    monthHeader.style.fontSize = "30px";
+    monthHeader.style.fontFamily = "'Caveat', cursive";
+    monthHeader.style.padding = "10px 0";
+    monthContainer.appendChild(monthHeader);
 
-    for (let i = 0; i < 7; i++) {
-      const cell = document.createElement("td");
+    const monthTable = document.createElement("table");
+    monthTable.className = "month-table";
 
-      if (currentDay.getDay() === i && currentDay.getFullYear() === year) {
-        cell.textContent = currentDay.getDate();
+    const headerRow = document.createElement("tr");
+    for (const dayOfWeek of daysOfWeek) {
+      const th = document.createElement("th");
+      th.textContent = dayOfWeek;
+      th.style.color = "white";
+      th.style.fontSize = "15px";
+      th.style.fontFamily = "'Caveat', cursive";
+      headerRow.appendChild(th);
+    }
+    monthTable.appendChild(headerRow);
+
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+    const firstDay = new Date(year, monthIndex, 1).getDay();
+
+    let date = 1;
+    for (let i = 0; i < 6; i++) {
+      const row = document.createElement("tr");
+
+      for (let j = 0; j < 7; j++) {
+        const cell = document.createElement("td");
+
+        if ((i === 0 && j < (firstDay === 0 ? 6 : firstDay - 1)) || date > daysInMonth) {
+          row.appendChild(cell);
+          continue;
+        }
+
+        cell.textContent = date;
         cell.style.color = "white";
         cell.style.fontSize = "15px";
         cell.style.fontFamily = "'Caveat', cursive";
-        cell.style.padding = "5px";
-        cell.style.transition = "background-color 0.3s"; // Add transition effect
+        cell.style.padding = "10px";
+        cell.style.transition = "background-color 0.3s";
 
-        // Check if it's a weekend (Saturday or Sunday)
-        const isWeekend = i === 5 || i === 6;
+        const isWeekend = j === 5 || j === 6;
+        cell.style.backgroundColor = isWeekend ? "rgba(0, 0, 0, 0.7)" : "rgba(0, 0, 0, 0.2)";
+        cell.style.borderRadius = "50%";
 
-        // Set the background color based on weekend or weekday
-        cell.style.backgroundColor = isWeekend
-          ? "rgba(0, 0, 0, 0.7)"
-          : "rgba(0, 0, 0, 0.2)";
-        cell.style.borderRadius = "50%"; // Make the background circular
-
-        // Check if the current cell's date matches the current day
         if (
-          currentDay.getDate() === currentDate.getDate() &&
-          currentDay.getMonth() === currentDate.getMonth() &&
-          currentDay.getFullYear() === currentDate.getFullYear()
+          date === currentDate.getDate() &&
+          monthIndex === currentDate.getMonth() &&
+          year === currentDate.getFullYear()
         ) {
-          cell.style.border = "2px solid white"; // Add a white circular border
+          cell.style.border = "2px solid white";
         }
 
-        // Add hover effects
         cell.addEventListener("mouseenter", function () {
-          cell.style.backgroundColor = isWeekend
-            ? "rgba(0, 0, 0, 1.0)"
-            : "rgba(0, 0, 0, 0.8)";
+          cell.style.backgroundColor = isWeekend ? "rgba(0, 0, 0, 1.0)" : "rgba(0, 0, 0, 0.8)";
         });
 
         cell.addEventListener("mouseleave", function () {
-          cell.style.backgroundColor = isWeekend
-            ? "rgba(0, 0, 0, 0.7)"
-            : "rgba(0, 0, 0, 0.2)";
+          cell.style.backgroundColor = isWeekend ? "rgba(0, 0, 0, 0.7)" : "rgba(0, 0, 0, 0.2)";
         });
 
-        currentDay.setDate(currentDay.getDate() + 1); // Move to the next day
+        row.appendChild(cell);
+        date++;
       }
 
-      row.appendChild(cell);
+      monthTable.appendChild(row);
     }
 
-    calendarTable.appendChild(row);
+    monthContainer.appendChild(monthTable);
+    calendarFragment.appendChild(monthContainer);
   }
 
-  container.innerHTML = ""; // Clear the container before rendering
-  container.appendChild(calendarTable);
+  container.innerHTML = "";
+  container.appendChild(calendarFragment);
+
+  const focusMonthOffset = 11; // Index of the current month in the displayed range
+  const scrollPosition = container.scrollHeight * (focusMonthOffset / totalMonths);
+  container.scrollTop = scrollPosition;
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
 
   const calendarContainer = document.getElementById("calendar");
 
-  createYearCalendar(calendarContainer, currentYear);
+  createScrollableCalendar(calendarContainer, currentYear, currentMonth);
 });
