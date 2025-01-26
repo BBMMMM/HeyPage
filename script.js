@@ -112,14 +112,14 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
 
     const monthContainer = document.createElement("div");
     monthContainer.className = "month-container";
-    monthContainer.style.margin = "20px 0";
+    monthContainer.style.margin = "5px 0";
 
     const monthHeader = document.createElement("div");
     monthHeader.textContent = `${monthNames[monthIndex]} ${year} 📅`;
     monthHeader.style.color = "white";
-    monthHeader.style.fontSize = "23px";
+    monthHeader.style.fontSize = "50px";
     monthHeader.style.fontFamily = "'Caveat', cursive";
-    monthHeader.style.padding = "10px 0";
+    monthHeader.style.padding = "5px 0";
     monthContainer.appendChild(monthHeader);
 
     const monthTable = document.createElement("table");
@@ -131,7 +131,7 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
       const th = document.createElement("th");
       th.textContent = dayOfWeek;
       th.style.color = "rgba(255, 255, 255, 0.2)"; // Barely visible by default
-      th.style.fontSize = "15px";
+      th.style.fontSize = "20px";
       th.style.fontFamily = "'Caveat', cursive";
       headerRow.appendChild(th);
     }
@@ -147,9 +147,9 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
       const weekNumberCell = document.createElement("td");
       weekNumberCell.textContent = date <= daysInMonth ? `W${getWeekNumber(new Date(year, monthIndex, date))}` : "";
       weekNumberCell.style.color = "rgba(255, 255, 255, 0.2)"; // Barely visible by default
-      weekNumberCell.style.fontSize = "15px";
+      weekNumberCell.style.fontSize = "20px";
       weekNumberCell.style.fontFamily = "'Caveat', cursive";
-      weekNumberCell.style.padding = "10px";
+      weekNumberCell.style.padding = "30px";
       row.appendChild(weekNumberCell);
 
       for (let j = 0; j < 7; j++) {
@@ -161,9 +161,9 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
         }
 
         cell.textContent = date;
-        cell.style.fontSize = "15px";
+        cell.style.fontSize = "30px";
         cell.style.fontFamily = "'Caveat', cursive";
-        cell.style.padding = "10px";
+        cell.style.padding = "20px";
         cell.style.transition = "background-color 0.3s, color 0.3s";
 
         const isCurrentDayHoliday = isHoliday(year, monthIndex, date);
@@ -171,7 +171,7 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
 
         if (isCurrentDayHoliday) {
           cell.style.backgroundColor = "rgba(255, 0, 0, 0.1)"; // Highlight holidays with red background
-          cell.style.color = "red"; // Holiday text color is white
+          cell.style.color = "red"; // Holiday text color is red
           cell.addEventListener("mouseenter", function () {
             cell.style.backgroundColor = "rgba(255, 0, 0, 0.5)"; // Ensure hover keeps the red background
           });
@@ -207,7 +207,7 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
           monthIndex === currentDate.getMonth() &&
           year === currentYear
         ) {
-          cell.style.border = "2px solid white";
+          cell.style.border = "5px solid white";
         }
 
         row.appendChild(cell);
