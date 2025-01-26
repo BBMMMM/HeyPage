@@ -13,7 +13,7 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
     "October",
     "November",
     "December",
-  ];
+  ];  
 
   const nationalHolidays = [
     { month: 0, day: 1 }, // 1. Jan — Jaungada diena
@@ -27,6 +27,44 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
     { month: 11, day: 26 }, // 26. December — Ziemassvētki
     { month: 11, day: 31 }, // 31. December — Vecgada diena
   ];
+
+  function addEasterHolidays() {
+    const easterDates = [
+      { year: 2024, dates: [{ month: 2, day: 29 }, { month: 2, day: 31 }, { month: 3, day: 1 }] },
+      { year: 2025, dates: [{ month: 3, day: 18 }, { month: 3, day: 20 }, { month: 3, day: 21 }] },
+      { year: 2026, dates: [{ month: 3, day: 3 }, { month: 3, day: 5 }, { month: 3, day: 6 }] },
+      { year: 2027, dates: [{ month: 2, day: 26 }, { month: 2, day: 28 }, { month: 2, day: 29 }] },
+      { year: 2028, dates: [{ month: 3, day: 14 }, { month: 3, day: 16 }, { month: 3, day: 17 }] },
+      { year: 2029, dates: [{ month: 2, day: 30 }, { month: 3, day: 1 }, { month: 3, day: 2 }] },
+      { year: 2030, dates: [{ month: 3, day: 19 }, { month: 3, day: 21 }, { month: 3, day: 22 }] },
+      { year: 2031, dates: [{ month: 3, day: 11 }, { month: 3, day: 13 }, { month: 3, day: 14 }] },
+      { year: 2032, dates: [{ month: 2, day: 26 }, { month: 2, day: 28 }, { month: 2, day: 29 }] },
+      { year: 2033, dates: [{ month: 3, day: 15 }, { month: 3, day: 17 }, { month: 3, day: 18 }] },
+      { year: 2034, dates: [{ month: 3, day: 7 }, { month: 3, day: 9 }, { month: 3, day: 10 }] },
+    ];
+  
+    for (const entry of easterDates) {
+      for (const date of entry.dates) {
+        nationalHolidays.push({ year: entry.year, month: date.month, day: date.day });
+      }
+    }
+  }
+  addEasterHolidays();
+
+  function addSecondSundayOfMay() {
+    const startYear = new Date().getFullYear() - 1; // Start from the previous year
+    const endYear = new Date().getFullYear() + 1;  // Add for the next year
+  
+    for (let year = startYear; year <= endYear; year++) {
+      const mayFirst = new Date(year, 4, 1); // May 1st (month 4 in 0-based index)
+      const dayOfWeek = mayFirst.getDay(); // Day of the week for May 1st
+      const offset = dayOfWeek === 0 ? 7 : 7 - dayOfWeek; // Days to reach the first Sunday
+      const secondSunday = offset + 8; // Second Sunday is one week after the first Sunday
+  
+      nationalHolidays.push({ year, month: 4, day: secondSunday });
+    }
+  }
+  addSecondSundayOfMay();
 
   const currentDate = new Date();
 
@@ -49,9 +87,12 @@ function createScrollableCalendar(container, currentYear, currentMonth) {
   }
 
   function isHoliday(year, month, day) {
-    return nationalHolidays.some(
-      (holiday) => holiday.month === month && holiday.day === day
-    );
+    return nationalHolidays.some((holiday) => {
+      if (holiday.year !== undefined) {
+        return holiday.year === year && holiday.month === month && holiday.day === day;
+      }
+      return holiday.month === month && holiday.day === day;
+    });
   }
 
   function getNextDay(year, month, day) {
